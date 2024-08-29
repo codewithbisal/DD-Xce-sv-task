@@ -30,7 +30,7 @@ This project implements a Network-on-Chip (NoC) design, focusing on packet gener
 | `eop`            | Output    | 1-bit   | End of Packet signal                                      |
 | `ack`            | Input     | 1-bit   | Acknowledge signal from the destination                   |
 
-![Top Diagram](../images/top.png)
+![Top Diagram](images/top.png)
 
 
 ## State Diagram and Logic
@@ -42,7 +42,7 @@ The state diagram for the NoC implementation includes the following states:
 3. **Routing**: The packet is routed through the `NoCRouterInputPort`, where it is stored and forwarded based on its destination address (`dst_addr`).
 4. **Acknowledge**: The `Control_Unit` checks for acknowledgment (`ack`) from the destination and completes the packet transfer.
 
-![State Diagram](../images/control_diagram.png)
+![State Diagram](images/control_diagram.png)
 
 ## Definition of Network-on-Chip (NoC)
 
