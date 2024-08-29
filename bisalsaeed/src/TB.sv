@@ -14,6 +14,8 @@ module TopModule_tb;
     logic [7:0] payload;
     logic eop;
     logic ack;
+    logic pass_count;
+    logic fail_coun;
 
     TopModule uut (
         .clk(clk),
@@ -31,13 +33,11 @@ module TopModule_tb;
         .eop(eop),
         .ack(ack)
     );
-
     // Clock generation
     initial begin
         clk = 0;
         forever #5 clk = ~clk;
     end
-
     //PACKET GENERATION
     task generate_random_packet(output logic [12:0] random_pkt);
         begin
@@ -47,7 +47,6 @@ module TopModule_tb;
 
         end
     endtask
-
     // DRIVER GIVING INPUTS TO DUT
     task driver(input logic [12:0] packet_in);
         begin
@@ -58,7 +57,7 @@ module TopModule_tb;
             src_valid = 0;
         end
     endtask
-
+   //MONITORING THE MODULES
     task monitor();
         begin
             @(posedge src_valid);
@@ -77,21 +76,24 @@ module TopModule_tb;
             dst_ready = 0;
         end
     endtask
-
+    //CHECK PASS AND FAIL COUNT
     task scoreboard(input logic [12:0] expected_payload, input logic [1:0] expected_dst_addr);
         begin
             if (dst_valid && (payload == expected_payload)) begin
+                //if placed at wrong address
                 if (dst_addr == expected_dst_addr) begin
                     $display("PASSED : STORED AT CORRECT ADDRESS");
+                    pass_count++;
                 end else begin
                     $display("FAILED : Expected destination %b, got %b", expected_dst_addr, dst_addr);
+                    fail_count++;
                 end
             end else begin
                 $display("FAILED : PACKET DIDNOT MATCH");
+                fail_count++;
             end
         end
     endtask
-
     // Random tests
     task random_tests(input int num_tests);
         integer i;
@@ -108,7 +110,6 @@ module TopModule_tb;
             end
         end
     endtask
-
     // Test sequence
     initial begin
         clk = 0;
@@ -122,7 +123,6 @@ module TopModule_tb;
     end
 
 endmodule
-
 //DIRECTED TEST 
 /*module TopModule_tb;
     logic clk;
