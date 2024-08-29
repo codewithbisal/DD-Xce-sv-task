@@ -8,10 +8,8 @@ module Control_Unit(
     input logic [3:0] count,
     output logic en_gen,
 );
-
     typedef enum logic [1:0] {IDLE,GEN, PROCESS, WAIT} state_t;
     state_t state, next_state;
-
     always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
             state <= IDLE;
@@ -19,13 +17,11 @@ module Control_Unit(
             state <= next_state;
         end
     end
-
     always_comb begin
         en_gen = 0;
         src_ready=0;
         dst_valid=0;
         next_state = state;
-
         case (state)
             IDLE: begin
                 src_ready=1;
@@ -60,7 +56,4 @@ module Control_Unit(
             end
         endcase
     end
-
 endmodule
-
-
