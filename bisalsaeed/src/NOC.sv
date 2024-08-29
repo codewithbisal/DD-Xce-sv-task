@@ -31,18 +31,22 @@ module NoCRouterInputPort(
             fifo_full <= 0;
             fifo_empty <= 1;
         end else begin
+            //got input and fifo is not full
             if (packet_valid && !fifo_full && !stop_processing) begin
                 fifo[fifo_in] <= packet;
                 fifo_in <= fifo_in + 1;
                 fifo_empty <= 0;
             end
+            //got input fifo is not full neither empty 
             if (packet_ready && !fifo_empty && !stop_processing) begin
                 fifo_out <= fifo_out + 1;
                 fifo_full <= 0;
             end
+            //if fifo is empty
             if (fifo_in == fifo_out) begin
                 fifo_empty <= 1;
             end
+            //if fifo is full
             if ((fifo_in + 1) % 4 == fifo_out) begin
                 fifo_full <= 1;
             end
@@ -59,27 +63,20 @@ module NoCRouterInputPort(
             stop_processing <= 0; 
         end else begin
             if (packet_valid && !fifo_full && !stop_processing) begin
-                // Decode the packet
-                logic [1:0] addr = packet[12:11];
-                logic [1:0] type = packet[10:9];
-                logic [7:0] data = packet[8:1];
-                logic end_of_packet = packet[0]; 
                 // Store the packet
                 store_index[addr] <= store_index[addr] + 1;
                 store_type_index[addr][type] <= store_type_index[addr][type] + 1;
                 packet_store[addr][type] <= packet;
                 ack <= 1;
-                eop <= end_of_packet;
                 // Stop processing if EOP is detected
-                if (end_of_packet) begin
+                if (eop) begin
                     stop_processing <= 1;
                 end
             end else if (stop_processing) begin
-                // When processing is stopped, keep the state
+                // When processing is stopped, keep the state stable
                 ack <= 0;
                 dst_valid <= 0;
             end
         end
     end
-    //assign packet_ready = !fifo_full && !stop_processing;
 endmodule
