@@ -6,9 +6,7 @@ module PacketGenerator(
     output logic [12:0] packet,
     output logic packet_valid
 );
-
     logic [12:0] internal_packet;
-    
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             internal_packet <= 13'b0;
