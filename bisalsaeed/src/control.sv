@@ -37,6 +37,7 @@ module Control_Unit(
                     next_state = PROCESS;
                 end
             end
+            //fifo control signals implemented within NOC
             PROCESS: begin
                 if (ack) begin        
                     dst_valid = 1;
