@@ -29,7 +29,7 @@ module Control_Unit(
             end 
             GEN: begin
                 if (packet_valid) begin 
-                    en_gen = 1;
+                    //en_gen = 1;
                     next_state = PROCESS;
                 end
             end
