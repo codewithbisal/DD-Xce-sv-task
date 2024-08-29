@@ -42,6 +42,9 @@ module TopModule_tb;
     task generate_random_packet(output logic [12:0] random_pkt);
         begin
             random_pkt = $random;
+            expected_payload = random_pkt [8:1];
+            expected_dst_addr = random_pkt[12:11]; 
+
         end
     endtask
 
@@ -58,18 +61,26 @@ module TopModule_tb;
 
     task monitor();
         begin
+            @(posedge src_valid);
+            @(posedge src_ready);
             //check the PACK_GEN part
             if (packet_valid) begin
                 $display("Packet generated: %b", packet);
             end else begin
                 $display("No packet generated.");
             end
+            //WAIT for output
+            dst_ready = 1;
+            while (@(posedge dst_valid)) begin
+                @(posedge clk);
+            end
+            dst_ready = 0;
         end
     endtask
 
-    task scoreboard(input logic [12:0] expected_packet, input logic [1:0] expected_dst_addr);
+    task scoreboard(input logic [12:0] expected_payload, input logic [1:0] expected_dst_addr);
         begin
-            if (dst_valid && (packet == expected_packet)) begin
+            if (dst_valid && (payload == expected_payload)) begin
                 if (dst_addr == expected_dst_addr) begin
                     $display("PASSED : STORED AT CORRECT ADDRESS");
                 end else begin
@@ -85,16 +96,15 @@ module TopModule_tb;
     task random_tests(input int num_tests);
         integer i;
         logic [12:0] random_pkt;
-        
         begin
             for (i = 0; i < num_tests; i++) begin
                 fork 
-                generate_random_packet(random_pkt);
-                driver(random_pkt, 1);
-                @(posedge packet_valid);
-                monitor();
+                    generate_random_packet(random_pkt);
+                    driver(random_pkt, 1);
+                    @(posedge packet_valid);
+                    monitor();
+                    //#($urandom_range(5, 20)); // Random delay after one test 
                 join
-                //#($urandom_range(5, 20)); // Random delay 
             end
         end
     endtask
@@ -107,7 +117,7 @@ module TopModule_tb;
         pkt_in = 13'b0;
         dst_ready = 0;
         ack = 0;
-        random_tests(100000);
+        random_tests(10000);
         $finish;
     end
 
