@@ -41,10 +41,10 @@ module TopModule_tb;
     //PACKET GENERATION
     task generate_random_packet(output logic [12:0] random_pkt);
         begin
+            //generate random inputs for DUT
             random_pkt = $random;
             expected_payload = random_pkt [8:1];
             expected_dst_addr = random_pkt[12:11]; 
-
         end
     endtask
     // DRIVER GIVING INPUTS TO DUT
@@ -73,12 +73,14 @@ module TopModule_tb;
             while (@(posedge dst_valid)) begin
                 @(posedge clk);
             end
+            $display("Data %b at the adrr %b ", payload,dst_addr);
             dst_ready = 0;
         end
     endtask
     //CHECK PASS AND FAIL COUNT
     task scoreboard(input logic [12:0] expected_payload, input logic [1:0] expected_dst_addr);
         begin
+            //check if data is correct or not 
             if (dst_valid && (payload == expected_payload)) begin
                 //if placed at wrong address
                 if (dst_addr == expected_dst_addr) begin
