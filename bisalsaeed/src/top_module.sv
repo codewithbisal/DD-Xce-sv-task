@@ -45,10 +45,9 @@ module TopModule(
         .clk(clk),
         .reset(reset),
         .src_valid(src_valid),
-        .packet_valid(packet_valid_gen),
+        .packet_valid(packet_valid),
         .ack(ack),
         .dst_ready(dst_ready),
         .en_gen(en_gen)
     );
-
 endmodule
