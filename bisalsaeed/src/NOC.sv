@@ -81,5 +81,5 @@ module NoCRouterInputPort(
             end
         end
     end
-    assign packet_ready = !fifo_full && !stop_processing;
+    //assign packet_ready = !fifo_full && !stop_processing;
 endmodule
